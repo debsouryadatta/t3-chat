@@ -1,103 +1,134 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { api } from "@/convex/_generated/api";
+import { useQuery, useMutation } from "convex/react";
+import { useState } from "react";
+import { Id } from "@/convex/_generated/dataModel";
+
+export default function Page() {
+  const [activeTab, setActiveTab] = useState<"all" | "incomplete" | "completed">("all");
+  
+  // Query different task lists based on our requirements
+  const allTasks = useQuery(api.tasks.get);
+  const incompleteTasks = useQuery(api.tasks.getAllIncompleteTasks);
+  const completedTasks = useQuery(api.tasks.getCompletedTasks);
+  
+  // Get the appropriate tasks based on the active tab
+  const displayedTasks = 
+    activeTab === "all" ? allTasks :
+    activeTab === "incomplete" ? incompleteTasks :
+    completedTasks;
+  
+  // Mutation to toggle task completion status
+  const setTaskCompleted = useMutation(api.tasks.setTaskCompleted);
+  
+  // Handler for toggling task completion
+  const handleToggleComplete = (taskId: Id<"tasks">, currentStatus: boolean) => {
+    setTaskCompleted({ taskId, isCompleted: !currentStatus });
+  };
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-8 px-4">
+      <div className="max-w-2xl mx-auto">
+        <div className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
+          {/* Header */}
+          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-8 py-6">
+            <h1 className="text-3xl font-bold text-white">✅ Task Manager</h1>
+            <p className="text-blue-100 mt-2">Stay organized and productive</p>
+          </div>
+          
+          {/* Tab navigation */}
+          <div className="bg-gray-50 px-8 py-4">
+            <div className="flex space-x-1 bg-gray-200 rounded-lg p-1">
+              <button 
+                onClick={() => setActiveTab("all")} 
+                className={`flex-1 px-4 py-2 rounded-md font-medium transition-all duration-200 ${
+                  activeTab === "all" 
+                    ? "bg-white text-blue-600 shadow-sm" 
+                    : "text-gray-600 hover:text-gray-800 hover:bg-gray-100"
+                }`}
+              >
+                All Tasks
+              </button>
+              <button 
+                onClick={() => setActiveTab("incomplete")} 
+                className={`flex-1 px-4 py-2 rounded-md font-medium transition-all duration-200 ${
+                  activeTab === "incomplete" 
+                    ? "bg-white text-orange-600 shadow-sm" 
+                    : "text-gray-600 hover:text-gray-800 hover:bg-gray-100"
+                }`}
+              >
+                Incomplete
+              </button>
+              <button 
+                onClick={() => setActiveTab("completed")} 
+                className={`flex-1 px-4 py-2 rounded-md font-medium transition-all duration-200 ${
+                  activeTab === "completed" 
+                    ? "bg-white text-green-600 shadow-sm" 
+                    : "text-gray-600 hover:text-gray-800 hover:bg-gray-100"
+                }`}
+              >
+                Completed
+              </button>
+            </div>
+          </div>
+          
+          {/* Task list */}
+          <div className="px-8 py-6">
+            {displayedTasks?.length === 0 ? (
+              <div className="text-center py-12">
+                <div className="text-6xl mb-4">📋</div>
+                <p className="text-gray-500 text-lg font-medium">No tasks found</p>
+                <p className="text-gray-400 text-sm mt-2">Add some tasks to get started!</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {displayedTasks?.map(({ _id, text, isCompleted }) => (
+                  <div 
+                    key={_id} 
+                    className={`group flex items-center p-4 rounded-xl border transition-all duration-200 hover:shadow-md ${
+                      isCompleted 
+                        ? "bg-green-50 border-green-200 hover:bg-green-100" 
+                        : "bg-white border-gray-200 hover:bg-gray-50 hover:border-blue-300"
+                    }`}
+                  >
+                    <div className="flex items-center">
+                      <input 
+                        type="checkbox" 
+                        checked={isCompleted} 
+                        onChange={() => handleToggleComplete(_id, isCompleted)}
+                        className={`mr-4 h-5 w-5 rounded border-2 transition-colors duration-200 ${
+                          isCompleted 
+                            ? "text-green-600 border-green-300 focus:ring-green-500" 
+                            : "text-blue-600 border-gray-300 focus:ring-blue-500"
+                        }`}
+                      />
+                      <span className={`text-lg transition-all duration-200 ${
+                        isCompleted 
+                          ? "line-through text-green-600 opacity-75" 
+                          : "text-gray-800 group-hover:text-blue-700"
+                      }`}>
+                        {text}
+                      </span>
+                    </div>
+                    <div className="ml-auto">
+                      {isCompleted ? (
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                          ✓ Done
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                          ⏳ Pending
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </div>
     </div>
   );
 }
