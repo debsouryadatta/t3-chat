@@ -19,6 +19,7 @@ import {
 } from "lucide-react"
 import { useTheme } from "next-themes"
 import { useState, useEffect } from "react"
+import { SignInButton, SignUpButton } from "@clerk/nextjs"
 
 export default function LandingPage() {
   const { theme, setTheme } = useTheme()
@@ -101,15 +102,19 @@ export default function LandingPage() {
                 {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
               </Button>
             )}
-            <Button
-              variant="ghost"
-              className="hidden sm:inline-flex text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800/50 backdrop-blur-sm"
-            >
-              Sign In
-            </Button>
-            <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white border-0">
-              Get Started
-            </Button>
+            <SignInButton>
+              <Button
+                variant="ghost"
+                className="hidden sm:inline-flex text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800/50 backdrop-blur-sm"
+              >
+                Sign In
+              </Button>
+            </SignInButton>
+            <SignUpButton>
+              <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white border-0">
+                Get Started
+              </Button>
+            </SignUpButton>
           </div>
         </header>
 
@@ -236,13 +241,15 @@ export default function LandingPage() {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Button
-                size="lg"
-                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-6 text-lg rounded-full shadow-lg hover:shadow-purple-500/25 transition-all duration-300 transform hover:scale-105"
-              >
-                Start New Chat
-                <MessageCircle className="ml-2 w-5 h-5" />
-              </Button>
+              <SignUpButton>
+                <Button
+                  size="lg"
+                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-6 text-lg rounded-full shadow-lg hover:shadow-purple-500/25 transition-all duration-300 transform hover:scale-105"
+                >
+                  Start New Chat
+                  <MessageCircle className="ml-2 w-5 h-5" />
+                </Button>
+              </SignUpButton>
               <Button
                 variant="outline"
                 size="lg"
@@ -324,12 +331,14 @@ export default function LandingPage() {
                   Join thousands of users already experiencing the future of AI conversation.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Button
-                    size="lg"
-                    className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-6 text-lg rounded-full font-semibold shadow-lg hover:shadow-purple-500/25 transition-all duration-300 transform hover:scale-105"
-                  >
-                    Start Free Chat
-                  </Button>
+                  <SignUpButton>
+                    <Button
+                      size="lg"
+                      className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-6 text-lg rounded-full font-semibold shadow-lg hover:shadow-purple-500/25 transition-all duration-300 transform hover:scale-105"
+                    >
+                      Start Free Chat
+                    </Button>
+                  </SignUpButton>
                   <Button
                     size="lg"
                     variant="outline"
