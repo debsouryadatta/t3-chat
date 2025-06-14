@@ -1,11 +1,11 @@
 import { tool } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { z } from "zod";
-import { Agent, createTool } from "@convex-dev/agent";
+import { Agent, createTool, MessageDoc } from "@convex-dev/agent";
 import { components } from "./_generated/api";
 import { action, mutation, query } from "./_generated/server";
 import { v } from "convex/values";
-import { paginationOptsValidator } from "convex/server";
+import { paginationOptsValidator, PaginationResult } from "convex/server";
 
 // Define an agent similarly to the AI SDK
 const supportAgent = new Agent(components.agent, {
@@ -43,30 +43,19 @@ export const listThreadMessages = query({
   args: {
     threadId: v.string(),
     paginationOpts: paginationOptsValidator,
+    //... other arguments you want
   },
-  handler: async (ctx, { threadId, paginationOpts }) => {
+  handler: async (
+    ctx, { threadId, paginationOpts },
+  ): Promise<PaginationResult<MessageDoc>> => {
     // await authorizeThreadAccess(ctx, threadId);
-    const paginated = await supportAgent.listMessages(ctx, { threadId, paginationOpts });
+    const paginated = await supportAgent.listMessages(ctx, {
+      threadId,
+      paginationOpts,
+    });
+    // Here you could filter out / modify the documents
     return paginated;
   },
 });
 
-// export const listThreadMessages = query({
-//   args: {
-//     threadId: v.string(),
-//     paginationOpts: paginationOptsValidator,
-//     //... other arguments you want
-//   },
-//   handler: async (
-//     ctx, { threadId, paginationOpts },
-//   ): PaginationResult<MessageDoc> => {
-//     // await authorizeThreadAccess(ctx, threadId);
-//     const paginated = await agent.listMessages(ctx, {
-//       threadId,
-//       paginationOpts,
-//     });
-//     // Here you could filter out / modify the documents
-//     return paginated;
-//   },
-// });
 

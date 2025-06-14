@@ -13,7 +13,7 @@ importers:
         version: 1.3.22(zod@3.25.64)
       '@convex-dev/agent':
         specifier: ^0.1.7
-        version: 0.1.7(ai@4.3.16(react@19.1.0)(zod@3.25.64))(convex-helpers@0.1.93(convex@1.24.8(react@19.1.0))(react@19.1.0)(typescript@5.8.3)(zod@3.25.64))(convex@1.24.8(react@19.1.0))(react@19.1.0)
+        version: 0.1.7(ai@4.3.16(react@19.1.0)(zod@3.25.64))(convex-helpers@0.1.90(convex@1.24.8(react@19.1.0))(react@19.1.0)(typescript@5.8.3)(zod@3.25.64))(convex@1.24.8(react@19.1.0))(react@19.1.0)
       '@radix-ui/react-slot':
         specifier: ^1.2.3
         version: 1.2.3(@types/react@19.1.7)(react@19.1.0)
@@ -29,6 +29,9 @@ importers:
       convex:
         specifier: ^1.24.8
         version: 1.24.8(react@19.1.0)
+      convex-helpers:
+        specifier: ^0.1.90
+        version: 0.1.90(convex@1.24.8(react@19.1.0))(react@19.1.0)(typescript@5.8.3)(zod@3.25.64)
       lucide-react:
         specifier: ^0.514.0
         version: 0.514.0(react@19.1.0)
@@ -1012,8 +1015,8 @@ packages:
   concat-map@0.0.1:
     resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}
 
-  convex-helpers@0.1.93:
-    resolution: {integrity: sha512-Y/ml2BV/Gi4JJHm+mmyqUXXm4EqzksbAKpT3CwX7SMuE+w0bdwQamDdD+MF4AVlqlBF4AJu9UBGE6HV2U+e3hA==}
+  convex-helpers@0.1.90:
+    resolution: {integrity: sha512-tbBi6niAJ36bVCuDV0nWxfF4Q963ADXlLtseOPTLOCbtTPl9qycqQPg6Zk11uMOb2sxiBUrMpfgmyGuJkKyszA==}
     hasBin: true
     peerDependencies:
       '@standard-schema/spec': ^1.0.0
@@ -2215,11 +2218,11 @@ snapshots:
       '@jridgewell/gen-mapping': 0.3.8
       '@jridgewell/trace-mapping': 0.3.25
 
-  '@convex-dev/agent@0.1.7(ai@4.3.16(react@19.1.0)(zod@3.25.64))(convex-helpers@0.1.93(convex@1.24.8(react@19.1.0))(react@19.1.0)(typescript@5.8.3)(zod@3.25.64))(convex@1.24.8(react@19.1.0))(react@19.1.0)':
+  '@convex-dev/agent@0.1.7(ai@4.3.16(react@19.1.0)(zod@3.25.64))(convex-helpers@0.1.90(convex@1.24.8(react@19.1.0))(react@19.1.0)(typescript@5.8.3)(zod@3.25.64))(convex@1.24.8(react@19.1.0))(react@19.1.0)':
     dependencies:
       ai: 4.3.16(react@19.1.0)(zod@3.25.64)
       convex: 1.24.8(react@19.1.0)
-      convex-helpers: 0.1.93(convex@1.24.8(react@19.1.0))(react@19.1.0)(typescript@5.8.3)(zod@3.25.64)
+      convex-helpers: 0.1.90(convex@1.24.8(react@19.1.0))(react@19.1.0)(typescript@5.8.3)(zod@3.25.64)
     optionalDependencies:
       react: 19.1.0
 
@@ -2980,7 +2983,7 @@ snapshots:
 
   concat-map@0.0.1: {}
 
-  convex-helpers@0.1.93(convex@1.24.8(react@19.1.0))(react@19.1.0)(typescript@5.8.3)(zod@3.25.64):
+  convex-helpers@0.1.90(convex@1.24.8(react@19.1.0))(react@19.1.0)(typescript@5.8.3)(zod@3.25.64):
     dependencies:
       convex: 1.24.8(react@19.1.0)
     optionalDependencies:
