@@ -3,9 +3,23 @@ import { openai } from "@ai-sdk/openai";
 import { z } from "zod";
 import { Agent, createTool, MessageDoc } from "@convex-dev/agent";
 import { components } from "./_generated/api";
-import { action, mutation, query } from "./_generated/server";
+import { action, ActionCtx, mutation, query, QueryCtx } from "./_generated/server";
 import { v } from "convex/values";
 import { paginationOptsValidator, PaginationResult } from "convex/server";
+
+async function authorizeThreadAccess(ctx: ActionCtx | QueryCtx, threadId: string) {
+  const identity = await ctx.auth.getUserIdentity();
+  if (!identity) {
+    throw new Error("Not Authorized");
+  }
+  const userId = identity.subject;
+  // Fetch the thread and check if the user has access
+  const thread = await ctx.runQuery(components.agent.threads.getThread, { threadId });
+  if (!thread || thread.userId !== userId) {
+    throw new Error("Unauthorized");
+  }
+  return userId;
+}
 
 // Define an agent similarly to the AI SDK
 const supportAgent = new Agent(components.agent, {
@@ -19,7 +33,11 @@ const supportAgent = new Agent(components.agent, {
 export const createThread = mutation({
   args: {},
   handler: async (ctx): Promise<{ threadId: string }> => {
-    const userId = "123"; // Replace with actual user ID logic
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Not Authorized");
+    }
+    const userId = identity.subject;
     // Start a new thread for the user.
     const { threadId } = await supportAgent.createThread(ctx, { userId });
     return { threadId };
@@ -30,9 +48,8 @@ export const createThread = mutation({
 export const continueThread = action({
   args: { prompt: v.string(), threadId: v.string() },
   handler: async (ctx, { prompt, threadId }): Promise<string> => {
-    // await authorizeThreadAccess(ctx, threadId);
-    // This includes previous message history from the thread automatically.
-    const { thread } = await supportAgent.continueThread(ctx, { threadId });
+    const userId = await authorizeThreadAccess(ctx, threadId);
+    const { thread } = await supportAgent.continueThread(ctx, { threadId, userId });
     const result = await thread.generateText({ prompt });
     return result.text;
   },
@@ -48,12 +65,11 @@ export const listThreadMessages = query({
   handler: async (
     ctx, { threadId, paginationOpts },
   ): Promise<PaginationResult<MessageDoc>> => {
-    // await authorizeThreadAccess(ctx, threadId);
+    await authorizeThreadAccess(ctx, threadId);
     const paginated = await supportAgent.listMessages(ctx, {
       threadId,
       paginationOpts,
     });
-    // Here you could filter out / modify the documents
     return paginated;
   },
 });
