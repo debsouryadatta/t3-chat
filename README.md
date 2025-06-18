@@ -1,36 +1,99 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# T3.chat - Next-Gen AI Chat Application
 
-## Getting Started
+T3.chat is a full-stack, AI-powered chat application that demonstrates the power of modern web technologies. It features a beautiful, responsive interface, secure user authentication, and a helpful AI assistant ready to answer your questions.
 
-First, run the development server:
+![Landing Page](https://res.cloudinary.com/diyxwdtjd/image/upload/v1750272567/projects/t3-chat.png) <!-- It's a good idea to add a screenshot of your app here -->
+
+## ✨ Features
+
+- **Next-generation AI Chat:** Interact with a helpful AI assistant powered by Convex's Agent SDK.
+- **Full-stack React:** Built with Next.js 15 for a seamless front-to-back experience.
+- **Real-time & Secure Backend:** Uses Convex for backend, database, and real-time data synchronization.
+- **User Authentication:** Secure and easy sign-up/sign-in with Clerk.
+- **Persistent Threads:** Chat conversations are saved per user, so you can pick up where you left off.
+- **Modern UI:** Sleek and responsive design using Tailwind CSS and shadcn/ui.
+- **Light & Dark Mode:** Switch between themes for your viewing comfort.
+- **Streaming Responses:** AI responses are streamed in real-time for a dynamic user experience.
+
+## 🛠️ Tech Stack
+
+- **Framework:** [Next.js](https://nextjs.org/)
+- **Backend & Database:** [Convex](https://convex.dev/)
+- **AI SDK:** [Vercel AI SDK](https://sdk.vercel.ai/) & [@convex-dev/agent](https://github.com/get-convex/convex-agent-sdk)
+- **AI Model:** [OpenAI gpt-4o-mini](https://openai.com/)
+- **Authentication:** [Clerk](https://clerk.com/)
+- **Styling:** [Tailwind CSS](https://tailwindcss.com/)
+- **UI Components:** [shadcn/ui](https://ui.shadcn.com/)
+- **Deployment:** [Vercel](https://vercel.com/)
+
+## 🚀 Getting Started
+
+Follow these instructions to get the project up and running on your local machine.
+
+### Prerequisites
+
+- Node.js (v20 or later)
+- pnpm (or your favorite package manager)
+- A [Clerk](https://clerk.com/) account
+- An [OpenAI](https://openai.com/) API key
+
+### 1. Clone the repository
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/debsouryadatta/t3-chat.git
+cd t3-chat
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Install dependencies
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+pnpm install
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 3. Set up Convex
 
-## Learn More
+Log in to Convex and initialize the project. This command will guide you through setting up your backend.
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+pnpm convex dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+This will create a `convex.json` file and start the Convex development server. It will also provide you with the `CONVEX_DEPLOYMENT` URL.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 4. Set up Environment Variables
 
-## Deploy on Vercel
+Create a `.env.local` file in the root of your project and add your Clerk credentials:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```.env.local
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_your_publishable_key
+CLERK_SECRET_KEY=sk_your_secret_key
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# This is provided by `pnpm convex dev`
+NEXT_PUBLIC_CONVEX_URL=your_convex_deployment_url
+```
+
+### 5. Configure Convex Dashboard
+
+Now, add your Clerk and OpenAI secrets to the Convex dashboard. You can do this via the command line or by visiting your project on the [Convex dashboard](https://dashboard.convex.dev/).
+
+```bash
+pnpm convex env set CLERK_ISSUER_URL https://your-issuer-url.clerk.accounts.dev
+pnpm convex env set OPENAI_API_KEY sk_your_openai_api_key
+```
+
+- Find your **Clerk Issuer URL** in the Clerk dashboard under your project's API Keys section (it should be the "JWT issuer URL").
+- Get your **OpenAI API Key** from the [OpenAI platform](https://platform.openai.com/api-keys).
+
+### 6. Run the application
+
+Now you can start the Next.js development server:
+
+```bash
+pnpm dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) in your browser to see the application running.
+
+## 🤝 Contributing
+
+Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/debsouryadatta/t3-chat/issues). 
