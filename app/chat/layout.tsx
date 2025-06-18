@@ -16,6 +16,7 @@ import {
   Bot,
   Trash2,
   X,
+  Menu,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { SignInButton } from "@clerk/nextjs";
@@ -32,7 +33,7 @@ export default function ChatLayout({
 }: {
   children: React.ReactNode;
 }) {
-  
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [deletingThreadId, setDeletingThreadId] = useState<string | null>(null);
 
@@ -58,6 +59,12 @@ export default function ChatLayout({
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (window.innerWidth < 768) {
+      setIsSidebarOpen(false);
+    }
+  }, [pathname]);
 
   const handleNewChat = async () => {
     setIsLoading(true);
@@ -94,99 +101,148 @@ export default function ChatLayout({
   
   if (!isConvexLoading && !isAuthenticated) {
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-950">
-            <h1 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-200">Welcome to T3.chat</h1>
-            <p className="text-gray-600 dark:text-gray-400 mb-8">Please sign in to continue.</p>
-            <SignInButton mode="modal">
-                <Button>
-                    <LogIn className="mr-2 h-4 w-4" /> Sign In
-                </Button>
-            </SignInButton>
-        </div>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-background">
+        <h1 className="text-2xl font-semibold mb-4 text-foreground">
+          Welcome to T3.chat
+        </h1>
+        <p className="text-muted-foreground mb-8">
+          Please sign in to continue.
+        </p>
+        <SignInButton mode="modal">
+          <Button>
+            <LogIn className="mr-2 h-4 w-4" /> Sign In
+          </Button>
+        </SignInButton>
+      </div>
     );
   }
 
-  return (
-    <div className="flex h-screen bg-[#111111] text-white">
-      {/* Sidebar */}
-      <div className="w-1/4 min-w-[250px] bg-black p-4 flex flex-col">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-xl font-bold">T3.chat</h1>
-          <div className="flex items-center space-x-2">
-            {mounted && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              >
-                {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
-              </Button>
-            )}
-          </div>
+  const SidebarContent = () => (
+    <>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-xl font-bold">T3.chat</h1>
+        <div className="flex items-center space-x-2">
+          {mounted && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            >
+              {theme === "dark" ? (
+                <Sun size={20} className="text-foreground" />
+              ) : (
+                <Moon size={20} className="text-foreground" />
+              )}
+            </Button>
+          )}
         </div>
-        <Button
-          onClick={handleNewChat}
-          className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
-          disabled={isLoading}
-        >
-          <Plus className="mr-2 h-4 w-4" /> New Chat
-        </Button>
-        <div className="mt-6 flex-1 overflow-y-auto">
-          <h2 className="text-sm font-semibold text-gray-400 mb-2">Today</h2>
-          <div className="space-y-2">
-            {threads.map((thread: Thread) => (
-              <div key={thread._id} className="group relative">
-                <Button
-                  variant={pathname === `/chat/${thread._id}` ? "secondary" : "ghost"}
-                  className="w-full justify-start pr-8"
-                  onClick={() => router.push(`/chat/${thread._id}`)}
-                  disabled={deletingThreadId === thread._id}
-                >
-                  <MessageSquare className="mr-2 h-4 w-4 flex-shrink-0" />
-                  <span className="truncate">{thread.title || "New Conversation"}</span>
-                </Button>
+      </div>
+      <Button
+        onClick={handleNewChat}
+        className="w-full"
+        disabled={isLoading}
+      >
+        <Plus className="mr-2 h-4 w-4" /> New Chat
+      </Button>
+      <div className="mt-6 flex-1 overflow-y-auto">
+        <h2 className="text-sm font-semibold text-muted-foreground mb-2 px-2">
+          Conversations
+        </h2>
+        <div className="space-y-1">
+          {threads.map((thread: Thread) => (
+            <div key={thread._id} className="group relative">
+              <Button
+                variant={pathname === `/chat/${thread._id}` ? "secondary" : "ghost"}
+                className="w-full justify-start pr-10"
+                onClick={() => router.push(`/chat/${thread._id}`)}
+                disabled={deletingThreadId === thread._id}
+              >
+                <MessageSquare className="mr-2 h-4 w-4 flex-shrink-0" />
+                <span className="truncate">
+                  {thread.title || "New Conversation"}
+                </span>
+              </Button>
+              <div className="absolute right-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="absolute right-1 top-1/2 -translate-y-1/2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity text-gray-400 hover:text-red-400 hover:bg-red-500/10"
+                  className="h-7 w-7 text-muted-foreground hover:text-red-500"
                   onClick={(e) => handleDeleteThread(thread._id, e)}
                   disabled={deletingThreadId === thread._id}
+                  aria-label="Delete thread"
                 >
                   {deletingThreadId === thread._id ? (
-                    <div className="w-3 h-3 border border-gray-400 border-t-transparent rounded-full animate-spin" />
+                    <div className="w-3 h-3 border-2 border-border border-t-primary rounded-full animate-spin" />
                   ) : (
-                    <X size={14} />
+                    <Trash2 size={14} />
                   )}
                 </Button>
               </div>
-            ))}
-          </div>
-        </div>
-        <div className="border-t border-gray-700 pt-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center">
-                <span className="font-bold text-sm">
-                  {user?.firstName?.[0]}
-                  {user?.lastName?.[0]}
-                </span>
-              </div>
-              <span className="text-sm font-medium">{user?.fullName}</span>
             </div>
-            <Button
-              onClick={() => signOut(() => router.push("/"))}
-              variant="ghost"
-              size="sm"
-              className="text-gray-400 hover:text-white"
-            >
-              Logout
-            </Button>
-          </div>
+          ))}
         </div>
       </div>
+      <div className="border-t border-border pt-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
+              <span className="font-bold text-sm text-muted-foreground">
+                {user?.firstName?.[0]}
+                {user?.lastName?.[0]}
+              </span>
+            </div>
+            <span className="text-sm font-medium text-foreground">
+              {user?.fullName}
+            </span>
+          </div>
+          <Button
+            onClick={() => signOut(() => router.push("/"))}
+            variant="ghost"
+            size="sm"
+            className="text-muted-foreground hover:text-foreground"
+          >
+            Logout
+          </Button>
+        </div>
+      </div>
+    </>
+  );
+
+  return (
+    <div className="flex h-screen bg-background text-foreground">
+      {/* Sidebar for desktop */}
+      <div className="hidden md:flex md:flex-col md:w-72 bg-card border-r border-border p-4">
+        <SidebarContent />
+      </div>
+
+      {/* Mobile Sidebar */}
+      {isSidebarOpen && (
+        <div className="fixed inset-0 z-50 md:hidden">
+          <div
+            className="absolute inset-0 bg-black/50"
+            onClick={() => setIsSidebarOpen(false)}
+          ></div>
+          <div className="relative flex flex-col w-72 bg-card border-r border-border h-full p-4">
+            <SidebarContent />
+          </div>
+        </div>
+      )}
 
       {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col bg-[#111111]">
+      <div className="flex-1 flex flex-col bg-background">
+        <div className="md:hidden flex items-center justify-between p-2 border-b border-border">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setIsSidebarOpen(true)}
+          >
+            <Menu size={24} />
+          </Button>
+          <h1 className="text-lg font-semibold truncate">
+            {threads.find((t: Thread) => pathname === `/chat/${t._id}`)?.title || "T3.chat"}
+          </h1>
+          <div className="w-10"></div>
+        </div>
         {children}
       </div>
     </div>

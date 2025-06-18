@@ -29,23 +29,23 @@ const Message = ({ message, user }: MessageProps) => {
       }`}
     >
       {message.role !== "user" && (
-        <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 flex-shrink-0 flex items-center justify-center">
-          <Bot size={20} />
+        <div className="w-8 h-8 rounded-full bg-primary flex-shrink-0 flex items-center justify-center">
+          <Bot size={20} className="text-primary-foreground" />
         </div>
       )}
       <div
-        className={`max-w-xl p-4 rounded-xl ${
+        className={`max-w-2xl p-4 rounded-xl ${
           message.role === "user"
-            ? "bg-[#222222]"
-            : "bg-transparent"
+            ? "bg-muted"
+            : "bg-card"
         }`}
       >
-        <div className="prose prose-invert prose-sm max-w-none whitespace-pre-wrap">
+        <div className="prose prose-sm dark:prose-invert max-w-none whitespace-pre-wrap text-foreground">
           {message.content}
         </div>
         {message.role !== "user" && (
-          <div className="mt-2 flex items-center gap-2 text-gray-400">
-            <span className="text-xs">Gemini 2.5 Flash</span>
+          <div className="mt-2 flex items-center gap-2 text-muted-foreground">
+            {/* <span className="text-xs">Gemini 2.5 Flash</span> */}
             <Button
               variant="ghost"
               size="icon"
@@ -53,7 +53,7 @@ const Message = ({ message, user }: MessageProps) => {
               onClick={handleCopy}
             >
               {copied ? (
-                <Check size={14} className="text-green-500" />
+                <Check size={14} className="text-green-600 dark:text-green-500" />
               ) : (
                 <Copy size={14} />
               )}
@@ -65,8 +65,8 @@ const Message = ({ message, user }: MessageProps) => {
         )}
       </div>
       {message.role === "user" && (
-        <div className="w-8 h-8 rounded-full bg-gray-700 flex-shrink-0 flex items-center justify-center">
-          <span className="font-bold text-sm">
+        <div className="w-8 h-8 rounded-full bg-secondary flex-shrink-0 flex items-center justify-center">
+          <span className="font-bold text-sm text-secondary-foreground">
             {user?.firstName?.[0]}
             {user?.lastName?.[0]}
           </span>

@@ -28,11 +28,12 @@ body {
   background: #9ca3af;
 }
 
+/* Global focus styles removed to rely on component-level focus visible styles */
 /* Focus styles */
-*:focus {
+/* *:focus {
   outline: 2px solid #3b82f6;
   outline-offset: 2px;
-}
+} */
 
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);

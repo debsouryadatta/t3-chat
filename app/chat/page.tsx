@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useMutation, useConvexAuth } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { Loader2 } from "lucide-react";
 
 export default function ChatPage() {
   const { isAuthenticated } = useConvexAuth();
@@ -37,11 +38,7 @@ export default function ChatPage() {
   return (
     <div className="flex justify-center items-center h-full">
       {isLoading && (
-        <div className="flex items-center space-x-2 text-gray-400">
-          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-75"></div>
-          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-150"></div>
-        </div>
+        <Loader2 size={32} className="animate-spin text-muted-foreground" />
       )}
     </div>
   );
