@@ -75,3 +75,24 @@ export const listThreadMessages = query({
 });
 
 
+export const listThreadsByUser = query({
+  args: { userId: v.string() },
+  handler: async (ctx, { userId }) => {
+    const threads = await ctx.runQuery(components.agent.threads.listThreadsByUserId, {
+      userId,
+      order: "desc",
+      paginationOpts: { cursor: null, numItems: 10 }
+    });
+    return threads;
+  },
+});
+
+export const deleteThread = mutation({
+  args: { threadId: v.string() },
+  handler: async (ctx, { threadId }) => {
+    await authorizeThreadAccess(ctx, threadId);
+    await ctx.runMutation(components.agent.threads.deleteAllForThreadIdAsync, { threadId });
+    return { success: true };
+  }
+})
+

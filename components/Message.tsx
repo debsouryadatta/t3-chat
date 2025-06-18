@@ -1,71 +1,79 @@
 "use client";
 
-import { Card } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+import { useState } from "react";
+import { Bot, Check, Copy, RefreshCcw } from "lucide-react";
+import { Button } from "./ui/button";
 
-interface MessageProps {
+type MessageProps = {
   message: {
-    id?: string;
-    userId?: string;
-    embeddingId?: string;
-    fileIds?: string[];
-    error?: string;
-    agentName?: string;
-    model?: string;
-    role?: string;
-    content?: string | Array<{ type: string; text?: string }>;
-    type?: string;
-    tool?: boolean;
-    // Add other properties that might exist from Convex Agent
-    [key: string]: any;
+    key: string;
+    role: string;
+    content: string;
   };
-}
+  user: { firstName: string | null; lastName: string | null } | null | undefined;
+};
 
-export function Message({ message }: MessageProps) {
-  // Extract content from different possible formats
-  let content = "";
-  let role = message.role || message.type || "assistant";
+const Message = ({ message, user }: MessageProps) => {
+  const [copied, setCopied] = useState(false);
 
-  if (typeof message.content === "string") {
-    content = message.content;
-  } else if (Array.isArray(message.content)) {
-    content = message.content
-      .map(part => part.text || "")
-      .join("");
-  } else if (message.error) {
-    content = `Error: ${message.error}`;
-    role = "error";
-  }
-
-  const isUser = role === "user";
-  const isError = role === "error";
+  const handleCopy = () => {
+    navigator.clipboard.writeText(message.content);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   return (
-    <div className={cn("flex w-full", isUser ? "justify-end" : "justify-start")}>
-      <Card
-        className={cn(
-          "max-w-[80%] p-4",
-          isUser
-            ? "bg-primary text-primary-foreground"
-            : isError
-            ? "bg-destructive text-destructive-foreground"
-            : "bg-muted"
-        )}
-      >
-        <div className="whitespace-pre-wrap text-sm">
-          {content || "Empty message"}
+    <div
+      className={`flex items-start gap-4 ${
+        message.role === "user" ? "justify-end" : ""
+      }`}
+    >
+      {message.role !== "user" && (
+        <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 flex-shrink-0 flex items-center justify-center">
+          <Bot size={20} />
         </div>
-        {message.agentName && (
-          <div className="text-xs opacity-75 mt-2">
-            Agent: {message.agentName}
+      )}
+      <div
+        className={`max-w-xl p-4 rounded-xl ${
+          message.role === "user"
+            ? "bg-[#222222]"
+            : "bg-transparent"
+        }`}
+      >
+        <div className="prose prose-invert prose-sm max-w-none whitespace-pre-wrap">
+          {message.content}
+        </div>
+        {message.role !== "user" && (
+          <div className="mt-2 flex items-center gap-2 text-gray-400">
+            <span className="text-xs">Gemini 2.5 Flash</span>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-6 w-6"
+              onClick={handleCopy}
+            >
+              {copied ? (
+                <Check size={14} className="text-green-500" />
+              ) : (
+                <Copy size={14} />
+              )}
+            </Button>
+            <Button variant="ghost" size="icon" className="h-6 w-6">
+              <RefreshCcw size={14} />
+            </Button>
           </div>
         )}
-        {message.model && (
-          <div className="text-xs opacity-75">
-            Model: {message.model}
-          </div>
-        )}
-      </Card>
+      </div>
+      {message.role === "user" && (
+        <div className="w-8 h-8 rounded-full bg-gray-700 flex-shrink-0 flex items-center justify-center">
+          <span className="font-bold text-sm">
+            {user?.firstName?.[0]}
+            {user?.lastName?.[0]}
+          </span>
+        </div>
+      )}
     </div>
   );
-}
+};
+
+export default Message; 
